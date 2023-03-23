@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System;
+using System.Security.Cryptography;
 
 namespace QuanLyBanHangAPI.Services.TokenServices
 {
@@ -12,6 +13,16 @@ namespace QuanLyBanHangAPI.Services.TokenServices
         public TokenServices(IConfiguration configuration)
         {
             _configuration = configuration;
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var random = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(random);
+                return Convert.ToBase64String(random);
+            }
         }
 
         public bool IsTokenExpired(string tokenString)

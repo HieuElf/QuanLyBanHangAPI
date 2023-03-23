@@ -10,6 +10,8 @@ using System.Text;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using QuanLyBanHangAPI.Data;
+using QuanLyBanHangAPI.Services.TokenServices;
 
 namespace QuanLyBanHangAPI.Controllers
 {
@@ -20,12 +22,16 @@ namespace QuanLyBanHangAPI.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly ITokenServices _tokenServices;
+        private readonly DB _dB;
 
-        public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration)
+        public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration,DB dB,ITokenServices tokenServices)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _dB = dB;
+            _tokenServices = tokenServices;
         }
 
         [HttpPost("login")]
@@ -51,8 +57,8 @@ namespace QuanLyBanHangAPI.Controllers
             {           
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Email, user.Email),
+                    //new Claim(ClaimTypes.Name, user.UserName),
+                    //new Claim(ClaimTypes.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
                 var roles = await _userManager.GetRolesAsync(user);
@@ -71,6 +77,24 @@ namespace QuanLyBanHangAPI.Controllers
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
 
+                // Lưu token vào db
+
+                var tokendb = new Token
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    TokenKey = new JwtSecurityTokenHandler().WriteToken(token),
+                    CreateAt = DateTime.UtcNow,
+                    VaiLidTo = token.ValidTo,
+                    TokenIsUsed = true,
+                    TokenIsReVoked = false,
+                    ReFreshToken = _tokenServices.GenerateRefreshToken(),
+                    IsUsed = false,
+                    IsRevoked = false
+                };
+
+                await _dB.AddAsync(tokendb);
+                await _dB.SaveChangesAsync();
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),

@@ -235,6 +235,46 @@ namespace QuanLyBanHangAPI.Migrations
                     b.ToTable("NhaCungCap");
                 });
 
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.Token", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReFreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TokenIsReVoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("TokenIsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("TokenKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("VaiLidTo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Token");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)

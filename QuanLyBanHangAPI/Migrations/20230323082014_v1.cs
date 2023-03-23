@@ -26,8 +26,6 @@ namespace QuanLyBanHangAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TaiKhoan = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MatKhau = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -60,6 +58,26 @@ namespace QuanLyBanHangAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NhaCungCap", x => x.MaNhaCungCap);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Token",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TokenKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VaiLidTo = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TokenIsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    TokenIsReVoked = table.Column<bool>(type: "bit", nullable: false),
+                    ReFreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Token", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -227,6 +245,9 @@ namespace QuanLyBanHangAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "NhaCungCap");
+
+            migrationBuilder.DropTable(
+                name: "Token");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

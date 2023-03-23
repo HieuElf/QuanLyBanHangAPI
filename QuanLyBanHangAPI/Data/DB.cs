@@ -8,6 +8,7 @@ namespace QuanLyBanHangAPI.Data
         public DB(DbContextOptions<DB> options) : base(options) { }
         #region DbSet
         public DbSet<NhaCungCap> NhaCungCaps { get; set; }
+        public DbSet<Token> Tokens { get; set; }
         #endregion
         protected override void OnModelCreating(ModelBuilder builder)
         {
