@@ -1,23 +1,24 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using QuanLyBanHangAPI.Models.GoiDichVu;
 using QuanLyBanHangAPI.Models.NhaCungCap;
-using QuanLyBanHangAPI.Services.NhaCungCapServices;
+using QuanLyBanHangAPI.Services.GoiDIchVuServices;
 using QuanLyBanHangAPI.Services.TokenServices;
+using System.Data;
 
 namespace QuanLyBanHangAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class NhaCungCapController : ControllerBase
+    public class GoiDichVuController : ControllerBase
     {
-        private readonly INhaCungCapServices _nhaCungCapServices;
         private readonly ITokenServices _tokenServices;
-        public NhaCungCapController(INhaCungCapServices nhaCungCapServices, ITokenServices tokenServices)
+        private readonly IGoiDichVuServices _goiDichVuServices;
+        public GoiDichVuController(ITokenServices tokenServices, IGoiDichVuServices goiDichVuServices)
         {
-            _nhaCungCapServices = nhaCungCapServices;
             _tokenServices = tokenServices;
+            _goiDichVuServices = goiDichVuServices;
         }
         private string GetJwtToken()
         {
@@ -39,7 +40,7 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.GetAll());
+                    return Ok(_goiDichVuServices.GetAll());
                 }
                 catch
                 {
@@ -57,10 +58,10 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    var ncc = _nhaCungCapServices.GetById(id);
-                    if (ncc != null)
+                    var goi = _goiDichVuServices.GetById(id);
+                    if (goi != null)
                     {
-                        return Ok(ncc);
+                        return Ok(goi);
                     }
                     return NotFound();
                 }
@@ -68,19 +69,19 @@ namespace QuanLyBanHangAPI.Controllers
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
-            }        
+            }
             return BadRequest("Token đã hết hạn");
         }
         [HttpPost]
         [Authorize(Roles = "Ad")]
-        public IActionResult Add(NhaCungCapModel model)
+        public IActionResult Add(GoiDichVuModel model)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.Add(model));
+                    return Ok(_goiDichVuServices.Add(model));
                 }
                 catch
                 {
@@ -92,15 +93,15 @@ namespace QuanLyBanHangAPI.Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = "Ad")]
-        public IActionResult Update(NhaCungCapVM vm)
+        public IActionResult Update(GoiDichVuVM vm)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(vm.MaNhaCungCap);
-                if (ncc != null)
+                var goi = _goiDichVuServices.GetById(vm.MaGoi);
+                if (goi != null)
                 {
-                    _nhaCungCapServices.Update(vm);
+                    _goiDichVuServices.Update(vm);
                     return NoContent();
                 }
                 return NotFound();
@@ -115,15 +116,16 @@ namespace QuanLyBanHangAPI.Controllers
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(id);
-                if (ncc == null)
+                var goi = _goiDichVuServices.GetById(id);
+                if (goi == null)
                 {
                     return NotFound();
                 }
-                _nhaCungCapServices.DeleteById(id);
+                _goiDichVuServices.Delete(id);
                 return Ok();
             }
             return BadRequest("Token đã hết hạn");
         }
+
     }
 }

@@ -10,8 +10,8 @@ using QuanLyBanHangAPI.Data;
 namespace QuanLyBanHangAPI.Migrations
 {
     [DbContext(typeof(DB))]
-    [Migration("20230323082014_v1")]
-    partial class v1
+    [Migration("20230411075335_add_avatarurl")]
+    partial class add_avatarurl
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -70,71 +70,6 @@ namespace QuanLyBanHangAPI.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -217,6 +152,118 @@ namespace QuanLyBanHangAPI.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.CtyXuatHoaDon", b =>
+                {
+                    b.Property<int>("MaCty")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("DiaChi")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SDT")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenCty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MaCty");
+
+                    b.ToTable("CtyXuatHoaDon");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.DonViChuyenPhat", b =>
+                {
+                    b.Property<int>("MaDonVi")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("GhiChu")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SDT")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
+                    b.Property<string>("TenDonVi")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("MaDonVi");
+
+                    b.ToTable("DonViChuyenPhat");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.GoiDichVu", b =>
+                {
+                    b.Property<int>("MaGoi")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double>("HeSo")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("MaNhaCungCap")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenGoi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("MaGoi");
+
+                    b.HasIndex("MaNhaCungCap");
+
+                    b.ToTable("GoiDichVu");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.KhachHangOder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("MaGoi")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MaNhaCungCap")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MaSoThue")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("SoDienThoai")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<string>("TenCongTy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenNguoiLienHe")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaGoi");
+
+                    b.HasIndex("MaNhaCungCap");
+
+                    b.ToTable("KhachHangOder");
+                });
+
             modelBuilder.Entity("QuanLyBanHangAPI.Data.NhaCungCap", b =>
                 {
                     b.Property<int>("MaNhaCungCap")
@@ -235,6 +282,34 @@ namespace QuanLyBanHangAPI.Migrations
                     b.HasKey("MaNhaCungCap");
 
                     b.ToTable("NhaCungCap");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.TaiKhoanNhanThanhToan", b =>
+                {
+                    b.Property<int>("IdTK")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ChiNhanh")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NganHang")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("STKNhan")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenTKNhan")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("IdTK");
+
+                    b.ToTable("TaiKhoanNhanThanhToan");
                 });
 
             modelBuilder.Entity("QuanLyBanHangAPI.Data.Token", b =>
@@ -277,6 +352,77 @@ namespace QuanLyBanHangAPI.Migrations
                     b.ToTable("Token");
                 });
 
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -288,7 +434,7 @@ namespace QuanLyBanHangAPI.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("QuanLyBanHangAPI.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -297,7 +443,7 @@ namespace QuanLyBanHangAPI.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("QuanLyBanHangAPI.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -312,7 +458,7 @@ namespace QuanLyBanHangAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("QuanLyBanHangAPI.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -321,11 +467,49 @@ namespace QuanLyBanHangAPI.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("QuanLyBanHangAPI.Data.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.GoiDichVu", b =>
+                {
+                    b.HasOne("QuanLyBanHangAPI.Data.NhaCungCap", "NhaCungCap")
+                        .WithMany("GoiDichVus")
+                        .HasForeignKey("MaNhaCungCap")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("NhaCungCap");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.KhachHangOder", b =>
+                {
+                    b.HasOne("QuanLyBanHangAPI.Data.GoiDichVu", "GoiDichVu")
+                        .WithMany("KhachHangOders")
+                        .HasForeignKey("MaGoi");
+
+                    b.HasOne("QuanLyBanHangAPI.Data.NhaCungCap", "NhaCungCap")
+                        .WithMany("KhachHangOders")
+                        .HasForeignKey("MaNhaCungCap");
+
+                    b.Navigation("GoiDichVu");
+
+                    b.Navigation("NhaCungCap");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.GoiDichVu", b =>
+                {
+                    b.Navigation("KhachHangOders");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.NhaCungCap", b =>
+                {
+                    b.Navigation("GoiDichVus");
+
+                    b.Navigation("KhachHangOders");
                 });
 #pragma warning restore 612, 618
         }

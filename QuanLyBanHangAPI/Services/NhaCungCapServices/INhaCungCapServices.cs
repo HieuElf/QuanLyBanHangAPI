@@ -10,6 +10,6 @@ namespace QuanLyBanHangAPI.Services.NhaCungCapServices
         NhaCungCapVM Add(NhaCungCapModel model);
         void Update(NhaCungCapVM vm);
         void DeleteById(int id);
-        
+
     }
 }

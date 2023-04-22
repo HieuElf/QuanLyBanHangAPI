@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using QuanLyBanHangAPI.Data;
 using QuanLyBanHangAPI.Models.NhaCungCap;
 using System.Collections.Generic;
-using QuanLyBanHangAPI.Data;
+using System.Linq;
 
 namespace QuanLyBanHangAPI.Services.NhaCungCapServices
 {
@@ -32,7 +32,7 @@ namespace QuanLyBanHangAPI.Services.NhaCungCapServices
         public void DeleteById(int id)
         {
             var ncc = _db.NhaCungCaps.SingleOrDefault(n => n.MaNhaCungCap == id);
-            if(ncc != null)
+            if (ncc != null)
             {
                 _db.Remove(ncc);
                 _db.SaveChanges();

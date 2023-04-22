@@ -1,9 +1,14 @@
-﻿namespace QuanLyBanHangAPI.Data.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace QuanLyBanHangAPI.Data.DTO
 {
     public class RegisterDto
     {
+        [Required]
         public string UserName { get; set; }
+        [Required]
         public string Password { get; set; }
+        [Required]
         public string Email { get; set; }
     }
 }

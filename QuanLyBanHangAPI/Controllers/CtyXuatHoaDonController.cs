@@ -1,22 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QuanLyBanHangAPI.Models.NhaCungCap;
-using QuanLyBanHangAPI.Services.NhaCungCapServices;
+using QuanLyBanHangAPI.Models.CtyXuatHoaDon;
+using QuanLyBanHangAPI.Services.CtyXuatHoaDonServices;
 using QuanLyBanHangAPI.Services.TokenServices;
+using System.Data;
 
 namespace QuanLyBanHangAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class NhaCungCapController : ControllerBase
+    public class CtyXuatHoaDonController : ControllerBase
     {
-        private readonly INhaCungCapServices _nhaCungCapServices;
+        private readonly ICtyXuatHoaDonServices _ctyXuatHoaDonServices;
         private readonly ITokenServices _tokenServices;
-        public NhaCungCapController(INhaCungCapServices nhaCungCapServices, ITokenServices tokenServices)
+        public CtyXuatHoaDonController(ICtyXuatHoaDonServices ctyXuatHoaDonServices, ITokenServices tokenServices)
         {
-            _nhaCungCapServices = nhaCungCapServices;
+            _ctyXuatHoaDonServices = ctyXuatHoaDonServices;
             _tokenServices = tokenServices;
         }
         private string GetJwtToken()
@@ -39,7 +39,7 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.GetAll());
+                    return Ok(_ctyXuatHoaDonServices.GetAll());
                 }
                 catch
                 {
@@ -57,7 +57,7 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    var ncc = _nhaCungCapServices.GetById(id);
+                    var ncc = _ctyXuatHoaDonServices.GetById(id);
                     if (ncc != null)
                     {
                         return Ok(ncc);
@@ -68,19 +68,29 @@ namespace QuanLyBanHangAPI.Controllers
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
-            }        
+            }
             return BadRequest("Token đã hết hạn");
         }
         [HttpPost]
         [Authorize(Roles = "Ad")]
-        public IActionResult Add(NhaCungCapModel model)
+        public IActionResult Add(CtyXuatHoaDonModel model)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.Add(model));
+                    if (model.TenCty == null)
+                    {
+                        return BadRequest("Tên công ty không được để trống");
+                    }
+                    var cty = _ctyXuatHoaDonServices.GetByName(model.TenCty);
+                    if (cty != null)
+                    {
+                        return BadRequest("Tên công ty đã tồn tại");
+                    }
+                    
+                    return Ok(_ctyXuatHoaDonServices.Add(model));
                 }
                 catch
                 {
@@ -92,16 +102,25 @@ namespace QuanLyBanHangAPI.Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = "Ad")]
-        public IActionResult Update(NhaCungCapVM vm)
+        public IActionResult Update(int id, CtyXuatHoaDonVM vm)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(vm.MaNhaCungCap);
+                var ncc = _ctyXuatHoaDonServices.GetById(id);
                 if (ncc != null)
                 {
-                    _nhaCungCapServices.Update(vm);
-                    return NoContent();
+                    if (vm.TenCty == null)
+                    {
+                        return BadRequest("Tên công ty không được để trống");
+                    }
+                    var cty = _ctyXuatHoaDonServices.GetByName(vm.TenCty);
+                    if (cty != null)
+                    {
+                        return BadRequest("Tên công ty đã tồn tại");
+                    }
+                    _ctyXuatHoaDonServices.Update(vm);
+                    return Ok("Update thành công");
                 }
                 return NotFound();
             }
@@ -115,13 +134,13 @@ namespace QuanLyBanHangAPI.Controllers
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(id);
+                var ncc = _ctyXuatHoaDonServices.GetById(id);
                 if (ncc == null)
                 {
                     return NotFound();
                 }
-                _nhaCungCapServices.DeleteById(id);
-                return Ok();
+                _ctyXuatHoaDonServices.DeleteById(id);
+                return Ok("Xóa thành công");
             }
             return BadRequest("Token đã hết hạn");
         }

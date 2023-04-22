@@ -1,18 +1,23 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
+using QuanLyBanHangAPI.Data;
+using QuanLyBanHangAPI.Models.Token;
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace QuanLyBanHangAPI.Services.TokenServices
 {
     public class TokenServices : ITokenServices
     {
         private readonly IConfiguration _configuration;
-        public TokenServices(IConfiguration configuration)
+        private readonly DB _db;
+        public TokenServices(IConfiguration configuration,DB db)
         {
             _configuration = configuration;
+            _db = db;
         }
 
         public string GenerateRefreshToken()
@@ -23,6 +28,11 @@ namespace QuanLyBanHangAPI.Services.TokenServices
                 rng.GetBytes(random);
                 return Convert.ToBase64String(random);
             }
+        }
+
+        public TokenVM GetByToken(string token)
+        {
+            throw new NotImplementedException();
         }
 
         public bool IsTokenExpired(string tokenString)
@@ -61,6 +71,17 @@ namespace QuanLyBanHangAPI.Services.TokenServices
             }
 
             return false;
+        }
+
+        public void Update(TokenVM vm)
+        {
+            var token = _db.Tokens.SingleOrDefault(n => n.TokenKey == vm.TokenKey);
+            if (token != null)
+            {
+                token.TokenIsReVoked = vm.TokenIsReVoked;
+                token.IsRevoked = vm.IsRevoked;
+                _db.SaveChanges();
+            }
         }
     }
 }

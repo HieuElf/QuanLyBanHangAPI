@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QuanLyBanHangAPI.Models.NhaCungCap;
-using QuanLyBanHangAPI.Services.NhaCungCapServices;
+using QuanLyBanHangAPI.Models.TaiKhoanNhanThanhToan;
+using QuanLyBanHangAPI.Services.TaiKhoanNhanThanhToanServices;
 using QuanLyBanHangAPI.Services.TokenServices;
 
 namespace QuanLyBanHangAPI.Controllers
@@ -10,13 +10,13 @@ namespace QuanLyBanHangAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class NhaCungCapController : ControllerBase
+    public class TaiKhoanNhanThanhToanController : ControllerBase
     {
-        private readonly INhaCungCapServices _nhaCungCapServices;
+        private readonly ITaiKhoanNhanThanhToanServices _taiKhoanNhanThanhToanServices;
         private readonly ITokenServices _tokenServices;
-        public NhaCungCapController(INhaCungCapServices nhaCungCapServices, ITokenServices tokenServices)
+        public TaiKhoanNhanThanhToanController(ITaiKhoanNhanThanhToanServices taiKhoanNhanThanhToanServices, ITokenServices tokenServices)
         {
-            _nhaCungCapServices = nhaCungCapServices;
+            _taiKhoanNhanThanhToanServices = taiKhoanNhanThanhToanServices;
             _tokenServices = tokenServices;
         }
         private string GetJwtToken()
@@ -27,8 +27,8 @@ namespace QuanLyBanHangAPI.Controllers
         }
         private bool CheckIsTokenExpired()
         {
-            string token = GetJwtToken();
-            bool check = _tokenServices.IsTokenExpired(token);
+            string tokencheck = GetJwtToken();
+            bool check = _tokenServices.IsTokenExpired(tokencheck);
             return check;
         }
         [HttpGet]
@@ -39,7 +39,7 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.GetAll());
+                    return Ok(_taiKhoanNhanThanhToanServices.GetAll());
                 }
                 catch
                 {
@@ -48,39 +48,38 @@ namespace QuanLyBanHangAPI.Controllers
             }
             return BadRequest("Token đã hết hạn");
         }
-
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult Get(int id)
         {
             bool check = CheckIsTokenExpired();
-            if (!check)
+            if (check)
             {
-                try
+                return BadRequest("Token đã hết hạn");
+            }
+            try
+            {
+                var ncc = _taiKhoanNhanThanhToanServices.GetById(id);
+                if (ncc != null)
                 {
-                    var ncc = _nhaCungCapServices.GetById(id);
-                    if (ncc != null)
-                    {
-                        return Ok(ncc);
-                    }
-                    return NotFound();
+                    return Ok(ncc);
                 }
-                catch
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError);
-                }
-            }        
-            return BadRequest("Token đã hết hạn");
+                return NotFound();
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
         [HttpPost]
         [Authorize(Roles = "Ad")]
-        public IActionResult Add(NhaCungCapModel model)
+        public IActionResult Add(TaiKhoanNhanThanhToanModel model)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.Add(model));
+                    return Ok(_taiKhoanNhanThanhToanServices.Add(model));
                 }
                 catch
                 {
@@ -92,22 +91,21 @@ namespace QuanLyBanHangAPI.Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = "Ad")]
-        public IActionResult Update(NhaCungCapVM vm)
+        public IActionResult Update(int id,TaiKhoanNhanThanhToanVM vm)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(vm.MaNhaCungCap);
+                var ncc = _taiKhoanNhanThanhToanServices.GetById(id);
                 if (ncc != null)
                 {
-                    _nhaCungCapServices.Update(vm);
+                    _taiKhoanNhanThanhToanServices.Update(vm);
                     return NoContent();
                 }
                 return NotFound();
             }
             return BadRequest("Token đã hết hạn");
         }
-
         [HttpDelete("{id}")]
         [Authorize(Roles = "Ad")]
         public IActionResult Delete(int id)
@@ -115,12 +113,12 @@ namespace QuanLyBanHangAPI.Controllers
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(id);
+                var ncc = _taiKhoanNhanThanhToanServices.GetById(id);
                 if (ncc == null)
                 {
                     return NotFound();
                 }
-                _nhaCungCapServices.DeleteById(id);
+                _taiKhoanNhanThanhToanServices.Delete(id);
                 return Ok();
             }
             return BadRequest("Token đã hết hạn");

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace QuanLyBanHangAPI.Migrations
 {
-    public partial class v1 : Migration
+    public partial class add_avatarurl : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,6 +26,8 @@ namespace QuanLyBanHangAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -47,6 +49,36 @@ namespace QuanLyBanHangAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CtyXuatHoaDon",
+                columns: table => new
+                {
+                    MaCty = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TenCty = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DiaChi = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SDT = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CtyXuatHoaDon", x => x.MaCty);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DonViChuyenPhat",
+                columns: table => new
+                {
+                    MaDonVi = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TenDonVi = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    SDT = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: true),
+                    GhiChu = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DonViChuyenPhat", x => x.MaDonVi);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "NhaCungCap",
                 columns: table => new
                 {
@@ -58,6 +90,22 @@ namespace QuanLyBanHangAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NhaCungCap", x => x.MaNhaCungCap);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaiKhoanNhanThanhToan",
+                columns: table => new
+                {
+                    IdTK = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TenTKNhan = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    STKNhan = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NganHang = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ChiNhanh = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaiKhoanNhanThanhToan", x => x.IdTK);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,6 +234,57 @@ namespace QuanLyBanHangAPI.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "GoiDichVu",
+                columns: table => new
+                {
+                    MaGoi = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TenGoi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MaNhaCungCap = table.Column<int>(type: "int", nullable: false),
+                    HeSo = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GoiDichVu", x => x.MaGoi);
+                    table.ForeignKey(
+                        name: "FK_GoiDichVu_NhaCungCap_MaNhaCungCap",
+                        column: x => x.MaNhaCungCap,
+                        principalTable: "NhaCungCap",
+                        principalColumn: "MaNhaCungCap",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "KhachHangOder",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaSoThue = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    TenCongTy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TenNguoiLienHe = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SoDienThoai = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
+                    MaNhaCungCap = table.Column<int>(type: "int", nullable: true),
+                    MaGoi = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KhachHangOder", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_KhachHangOder_GoiDichVu_MaGoi",
+                        column: x => x.MaGoi,
+                        principalTable: "GoiDichVu",
+                        principalColumn: "MaGoi",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_KhachHangOder_NhaCungCap_MaNhaCungCap",
+                        column: x => x.MaNhaCungCap,
+                        principalTable: "NhaCungCap",
+                        principalColumn: "MaNhaCungCap",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -224,6 +323,21 @@ namespace QuanLyBanHangAPI.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GoiDichVu_MaNhaCungCap",
+                table: "GoiDichVu",
+                column: "MaNhaCungCap");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KhachHangOder_MaGoi",
+                table: "KhachHangOder",
+                column: "MaGoi");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KhachHangOder_MaNhaCungCap",
+                table: "KhachHangOder",
+                column: "MaNhaCungCap");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -244,7 +358,16 @@ namespace QuanLyBanHangAPI.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "NhaCungCap");
+                name: "CtyXuatHoaDon");
+
+            migrationBuilder.DropTable(
+                name: "DonViChuyenPhat");
+
+            migrationBuilder.DropTable(
+                name: "KhachHangOder");
+
+            migrationBuilder.DropTable(
+                name: "TaiKhoanNhanThanhToan");
 
             migrationBuilder.DropTable(
                 name: "Token");
@@ -254,6 +377,12 @@ namespace QuanLyBanHangAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "GoiDichVu");
+
+            migrationBuilder.DropTable(
+                name: "NhaCungCap");
         }
     }
 }

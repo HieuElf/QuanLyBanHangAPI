@@ -1,22 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QuanLyBanHangAPI.Models.NhaCungCap;
-using QuanLyBanHangAPI.Services.NhaCungCapServices;
+using QuanLyBanHangAPI.Models.SanPham;
+using QuanLyBanHangAPI.Services.SanPhamServices;
 using QuanLyBanHangAPI.Services.TokenServices;
 
 namespace QuanLyBanHangAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class NhaCungCapController : ControllerBase
+    public class SanPhamController : ControllerBase
     {
-        private readonly INhaCungCapServices _nhaCungCapServices;
+        private readonly ISanPhamServices _sanPhamServices;
         private readonly ITokenServices _tokenServices;
-        public NhaCungCapController(INhaCungCapServices nhaCungCapServices, ITokenServices tokenServices)
+        public SanPhamController(ISanPhamServices sanPhamServices, ITokenServices tokenServices)
         {
-            _nhaCungCapServices = nhaCungCapServices;
+            _sanPhamServices = sanPhamServices;
             _tokenServices = tokenServices;
         }
         private string GetJwtToken()
@@ -39,7 +38,7 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.GetAll());
+                    return Ok(_sanPhamServices.GetAll());
                 }
                 catch
                 {
@@ -57,7 +56,7 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    var ncc = _nhaCungCapServices.GetById(id);
+                    var ncc = _sanPhamServices.GetByID(id);
                     if (ncc != null)
                     {
                         return Ok(ncc);
@@ -68,19 +67,19 @@ namespace QuanLyBanHangAPI.Controllers
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
-            }        
+            }
             return BadRequest("Token đã hết hạn");
         }
         [HttpPost]
         [Authorize(Roles = "Ad")]
-        public IActionResult Add(NhaCungCapModel model)
+        public IActionResult Add(SanPhamModel model)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.Add(model));
+                    return Ok(_sanPhamServices.Add(model));
                 }
                 catch
                 {
@@ -92,15 +91,15 @@ namespace QuanLyBanHangAPI.Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = "Ad")]
-        public IActionResult Update(NhaCungCapVM vm)
+        public IActionResult Update(SanPhamVM vm)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(vm.MaNhaCungCap);
+                var ncc = _sanPhamServices.GetByID(vm.MaSP);
                 if (ncc != null)
                 {
-                    _nhaCungCapServices.Update(vm);
+                    _sanPhamServices.Update(vm);
                     return NoContent();
                 }
                 return NotFound();
@@ -115,12 +114,12 @@ namespace QuanLyBanHangAPI.Controllers
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(id);
+                var ncc = _sanPhamServices.GetByID(id);
                 if (ncc == null)
                 {
                     return NotFound();
                 }
-                _nhaCungCapServices.DeleteById(id);
+                _sanPhamServices.Delete(id);
                 return Ok();
             }
             return BadRequest("Token đã hết hạn");

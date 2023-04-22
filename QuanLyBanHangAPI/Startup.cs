@@ -9,7 +9,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using QuanLyBanHangAPI.Data;
+using QuanLyBanHangAPI.Services.CtyXuatHoaDonServices;
+using QuanLyBanHangAPI.Services.DonViChuyenPhatServices;
+using QuanLyBanHangAPI.Services.GoiDIchVuServices;
+using QuanLyBanHangAPI.Services.KhachHangOderServices;
 using QuanLyBanHangAPI.Services.NhaCungCapServices;
+using QuanLyBanHangAPI.Services.TaiKhoanNhanThanhToanServices;
 using QuanLyBanHangAPI.Services.TokenServices;
 using System;
 using System.Text;
@@ -37,7 +42,7 @@ namespace QuanLyBanHangAPI
                 option.UseSqlServer(Configuration.GetConnectionString("DB"));
             });
             // Adding Identity
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<DB>()
                 .AddDefaultTokenProviders();
 
@@ -89,6 +94,11 @@ namespace QuanLyBanHangAPI
             });
             services.AddScoped<INhaCungCapServices, NhaCungCapServices>();
             services.AddScoped<ITokenServices, TokenServices>();
+            services.AddScoped<ICtyXuatHoaDonServices, CtyXuatHoaDonServices>();
+            services.AddScoped<IDonViChuyenPhatServices, DonViChuyenPhatServices>();
+            services.AddScoped<ITaiKhoanNhanThanhToanServices, TaiKhoanNhanThanhToanServices>();
+            services.AddScoped<IGoiDichVuServices, GoiDichVuServices>();
+            services.AddScoped<IKhachHangOderServices, KhachHangOderServices>();
             services.AddSwaggerGen(c =>
             {
                 // Include 'SecurityScheme' to use JWT Authentication

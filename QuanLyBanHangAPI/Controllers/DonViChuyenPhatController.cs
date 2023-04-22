@@ -1,22 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QuanLyBanHangAPI.Models.NhaCungCap;
-using QuanLyBanHangAPI.Services.NhaCungCapServices;
+using QuanLyBanHangAPI.Models.DonViChuyenPhat;
+using QuanLyBanHangAPI.Services.DonViChuyenPhatServices;
 using QuanLyBanHangAPI.Services.TokenServices;
+using System.Data;
 
 namespace QuanLyBanHangAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class NhaCungCapController : ControllerBase
+    public class DonViChuyenPhatController : ControllerBase
     {
-        private readonly INhaCungCapServices _nhaCungCapServices;
+        private readonly IDonViChuyenPhatServices _donViChuyenPhatServices;
         private readonly ITokenServices _tokenServices;
-        public NhaCungCapController(INhaCungCapServices nhaCungCapServices, ITokenServices tokenServices)
+        public DonViChuyenPhatController(IDonViChuyenPhatServices donViChuyenPhatServices, ITokenServices tokenServices)
         {
-            _nhaCungCapServices = nhaCungCapServices;
+            _donViChuyenPhatServices = donViChuyenPhatServices;
             _tokenServices = tokenServices;
         }
         private string GetJwtToken()
@@ -27,8 +27,8 @@ namespace QuanLyBanHangAPI.Controllers
         }
         private bool CheckIsTokenExpired()
         {
-            string token = GetJwtToken();
-            bool check = _tokenServices.IsTokenExpired(token);
+            string tokencheck = GetJwtToken();
+            bool check = _tokenServices.IsTokenExpired(tokencheck);
             return check;
         }
         [HttpGet]
@@ -39,7 +39,7 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.GetAll());
+                    return Ok(_donViChuyenPhatServices.GetAll());
                 }
                 catch
                 {
@@ -48,7 +48,6 @@ namespace QuanLyBanHangAPI.Controllers
             }
             return BadRequest("Token đã hết hạn");
         }
-
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -57,7 +56,7 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    var ncc = _nhaCungCapServices.GetById(id);
+                    var ncc = _donViChuyenPhatServices.GetByID(id);
                     if (ncc != null)
                     {
                         return Ok(ncc);
@@ -68,19 +67,19 @@ namespace QuanLyBanHangAPI.Controllers
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
-            }        
+            }
             return BadRequest("Token đã hết hạn");
         }
         [HttpPost]
         [Authorize(Roles = "Ad")]
-        public IActionResult Add(NhaCungCapModel model)
+        public IActionResult Add(DonViChuyenPhatModel model)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
                 try
                 {
-                    return Ok(_nhaCungCapServices.Add(model));
+                    return Ok(_donViChuyenPhatServices.Add(model));
                 }
                 catch
                 {
@@ -92,15 +91,15 @@ namespace QuanLyBanHangAPI.Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = "Ad")]
-        public IActionResult Update(NhaCungCapVM vm)
+        public IActionResult Update(int id, DonViChuyenPhatVM vm)
         {
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(vm.MaNhaCungCap);
+                var ncc = _donViChuyenPhatServices.GetByID(id);
                 if (ncc != null)
                 {
-                    _nhaCungCapServices.Update(vm);
+                    _donViChuyenPhatServices.Update(vm);
                     return NoContent();
                 }
                 return NotFound();
@@ -115,12 +114,12 @@ namespace QuanLyBanHangAPI.Controllers
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(id);
+                var ncc = _donViChuyenPhatServices.GetByID(id);
                 if (ncc == null)
                 {
                     return NotFound();
                 }
-                _nhaCungCapServices.DeleteById(id);
+                _donViChuyenPhatServices.Delete(id);
                 return Ok();
             }
             return BadRequest("Token đã hết hạn");
