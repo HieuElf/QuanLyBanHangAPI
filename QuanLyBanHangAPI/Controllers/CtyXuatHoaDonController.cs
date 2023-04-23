@@ -80,7 +80,7 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
-                    if (model.TenCty == null)
+                    if (model.TenCty == null || model.TenCty == "")
                     {
                         return BadRequest("Tên công ty không được để trống");
                     }
@@ -110,7 +110,7 @@ namespace QuanLyBanHangAPI.Controllers
                 var ncc = _ctyXuatHoaDonServices.GetById(id);
                 if (ncc != null)
                 {
-                    if (vm.TenCty == null)
+                    if (vm.TenCty == null || vm.TenCty == "")
                     {
                         return BadRequest("Tên công ty không được để trống");
                     }

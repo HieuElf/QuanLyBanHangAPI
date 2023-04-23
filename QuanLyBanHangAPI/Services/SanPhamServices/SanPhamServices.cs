@@ -96,5 +96,24 @@ namespace QuanLyBanHangAPI.Services.SanPhamServices
                 _db.SaveChanges();                           
             }
         }
+
+        public SanPhamVM GetByName(string name)
+        {
+            var sp = _db.SanPhams.SingleOrDefault(m => m.TenSP == name);
+            if (sp != null)
+            {
+                return new SanPhamVM
+                {
+                    MaSP = sp.MaSP,
+                    TenSP = sp.TenSP,
+                    MaGoi = sp.MaGoi,
+                    TomTat = sp.TomTat,
+                    MoTa = sp.MoTa,
+                    HinhAnh = sp.HinhAnh,
+                    TrangThai = sp.TrangThai
+                };
+            }
+            return null;
+        }
     }
 }

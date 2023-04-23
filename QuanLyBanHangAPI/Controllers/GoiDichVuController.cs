@@ -81,6 +81,15 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
+                    if (model.TenGoi == null)
+                    {
+                        return BadRequest("Tên gói chưa điền");
+                    }
+                    var checktengoi = _goiDichVuServices.GetByName(model.TenGoi);
+                    if (checktengoi != null)
+                    {
+                        return BadRequest("Tên gói đã tồn tại");
+                    }
                     return Ok(_goiDichVuServices.Add(model));
                 }
                 catch
@@ -101,8 +110,17 @@ namespace QuanLyBanHangAPI.Controllers
                 var goi = _goiDichVuServices.GetById(vm.MaGoi);
                 if (goi != null)
                 {
+                    if (vm.TenGoi == null)
+                    {
+                        return BadRequest("Tên gói chưa điền");
+                    }
+                    var checktengoi = _goiDichVuServices.GetByName(vm.TenGoi);
+                    if (checktengoi != null)
+                    {
+                        return BadRequest("Tên gói đã tồn tại");
+                    }
                     _goiDichVuServices.Update(vm);
-                    return NoContent();
+                    return Ok("Cập nhật thành công");
                 }
                 return NotFound();
             }
@@ -122,7 +140,7 @@ namespace QuanLyBanHangAPI.Controllers
                     return NotFound();
                 }
                 _goiDichVuServices.Delete(id);
-                return Ok();
+                return Ok("Xóa thành công");
             }
             return BadRequest("Token đã hết hạn");
         }

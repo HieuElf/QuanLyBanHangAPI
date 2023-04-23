@@ -7,6 +7,7 @@ namespace QuanLyBanHangAPI.Services.DonViChuyenPhatServices
     {
         List<DonViChuyenPhatVM> GetAll();
         DonViChuyenPhatVM GetByID(int id);
+        DonViChuyenPhatVM GetByName(string name);
         DonViChuyenPhatVM Add(DonViChuyenPhatModel model);
         void Update(DonViChuyenPhatVM vm);
         void Delete(int id);

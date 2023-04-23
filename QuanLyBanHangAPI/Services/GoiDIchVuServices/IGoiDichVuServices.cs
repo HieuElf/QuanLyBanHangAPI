@@ -8,6 +8,7 @@ namespace QuanLyBanHangAPI.Services.GoiDIchVuServices
         GoiDichVuVM Add(GoiDichVuModel model);
         List<GoiDichVuVM> GetAll();
         GoiDichVuVM GetById(int id);
+        GoiDichVuVM GetByName(string name);
         void Update(GoiDichVuVM vm);
         void Delete(int id);
     }

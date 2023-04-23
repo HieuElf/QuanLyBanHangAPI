@@ -69,6 +69,22 @@ namespace QuanLyBanHangAPI.Services.DonViChuyenPhatServices
             return null;
         }
 
+        public DonViChuyenPhatVM GetByName(string name)
+        {
+            var data = _db.DonViChuyenPhats.SingleOrDefault(m => m.TenDonVi == name);
+            if (data != null)
+            {
+                return new DonViChuyenPhatVM
+                {
+                    MaDonVi = data.MaDonVi,
+                    TenDonVi = data.TenDonVi,
+                    SDT = data.SDT,
+                    GhiChu = data.GhiChu
+                };
+            }
+            return null;
+        }
+
         public void Update(DonViChuyenPhatVM vm)
         {
             var data = _db.DonViChuyenPhats.SingleOrDefault(m => m.MaDonVi == vm.MaDonVi);

@@ -79,6 +79,15 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
+                    if (model.TenDonVi == null)
+                    {
+                        return BadRequest("Tên đơn vị không được để trống");
+                    }
+                    var checkdonvi = _donViChuyenPhatServices.GetByName(model.TenDonVi);
+                    if (checkdonvi != null)
+                    {
+                        return BadRequest("Tên đơn vị đã tồn tại");
+                    }
                     return Ok(_donViChuyenPhatServices.Add(model));
                 }
                 catch
@@ -99,8 +108,17 @@ namespace QuanLyBanHangAPI.Controllers
                 var ncc = _donViChuyenPhatServices.GetByID(id);
                 if (ncc != null)
                 {
+                    if (vm.TenDonVi == null)
+                    {
+                        return BadRequest("Tên đơn vị không được để trống");
+                    }
+                    var checkdonvi = _donViChuyenPhatServices.GetByName(vm.TenDonVi);
+                    if (checkdonvi != null)
+                    {
+                        return BadRequest("Tên đơn vị đã tồn tại");
+                    }
                     _donViChuyenPhatServices.Update(vm);
-                    return NoContent();
+                    return Ok("Cập nhật thành công");
                 }
                 return NotFound();
             }
@@ -120,7 +138,7 @@ namespace QuanLyBanHangAPI.Controllers
                     return NotFound();
                 }
                 _donViChuyenPhatServices.Delete(id);
-                return Ok();
+                return Ok("Xóa thành công");
             }
             return BadRequest("Token đã hết hạn");
         }

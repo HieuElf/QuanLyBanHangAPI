@@ -66,6 +66,21 @@ namespace QuanLyBanHangAPI.Services.GoiDIchVuServices
             return null;
         }
 
+        public GoiDichVuVM GetByName(string name)
+        {
+            var goi = _db.GoiDichVus.SingleOrDefault(n => n.TenGoi == name);
+            if (goi != null)
+            {
+                return new GoiDichVuVM
+                {
+                    MaGoi = goi.MaGoi,
+                    TenGoi = goi.TenGoi,
+                    MaCungCap = goi.MaNhaCungCap
+                };
+            }
+            return null;
+        }
+
         public void Update(GoiDichVuVM vm)
         {
             var goi = _db.GoiDichVus.SingleOrDefault(n => n.MaGoi == vm.MaGoi);

@@ -79,6 +79,15 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
+                    if (model.TenSP == "" || model.TenSP == null)
+                    {
+                        return BadRequest("Chưa điền tên sản phẩm");
+                    }
+                    var sp = _sanPhamServices.GetByName(model.TenSP);
+                    if (sp != null)
+                    {
+                        return BadRequest("Tên sản phẩm đã tồn tại");
+                    }
                     return Ok(_sanPhamServices.Add(model));
                 }
                 catch
@@ -99,8 +108,17 @@ namespace QuanLyBanHangAPI.Controllers
                 var ncc = _sanPhamServices.GetByID(vm.MaSP);
                 if (ncc != null)
                 {
+                    if (vm.TenSP == null)
+                    {
+                        return BadRequest("Chưa điền tên sản phẩm");
+                    }
+                    var sp = _sanPhamServices.GetByName(vm.TenSP);
+                    if (sp != null)
+                    {
+                        return BadRequest("Tên sản phẩm đã tồn tại");
+                    }
                     _sanPhamServices.Update(vm);
-                    return NoContent();
+                    return Ok("Cập nhật thành công");
                 }
                 return NotFound();
             }
@@ -120,7 +138,7 @@ namespace QuanLyBanHangAPI.Controllers
                     return NotFound();
                 }
                 _sanPhamServices.Delete(id);
-                return Ok();
+                return Ok("Xóa thành công");
             }
             return BadRequest("Token đã hết hạn");
         }

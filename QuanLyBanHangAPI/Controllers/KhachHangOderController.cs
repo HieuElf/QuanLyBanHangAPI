@@ -95,7 +95,7 @@ namespace QuanLyBanHangAPI.Controllers
                 if (ncc != null)
                 {
                     _khachHangOderServices.Update(vm);
-                    return NoContent();
+                    return Ok("Cập nhật thành công");
                 }
                 return NotFound();
             }
@@ -115,7 +115,7 @@ namespace QuanLyBanHangAPI.Controllers
                     return NotFound();
                 }
                 _khachHangOderServices.Delete(id);
-                return Ok();
+                return Ok("Xóa thành công");
             }
             return BadRequest("Token đã hết hạn");
         }

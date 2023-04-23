@@ -44,11 +44,13 @@ namespace QuanLyBanHangAPI.Controllers
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("UserName",user.UserName),
-                    //new Claim(ClaimTypes.Name, user.FullName),
                     new Claim(JwtRegisteredClaimNames.UniqueName,user.FullName),
-                    //new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Email,user.Email)
+                    //new Claim("Avatar",user.AvatarUrl)
                 };
+                if (user.AvatarUrl != null || user.AvatarUrl == "")
+                {
+                    authClaims.Add(new Claim("Avatar", user.AvatarUrl));
+                }
                 var roles = await _userManager.GetRolesAsync(user);
                 foreach (var role in roles)
                 {

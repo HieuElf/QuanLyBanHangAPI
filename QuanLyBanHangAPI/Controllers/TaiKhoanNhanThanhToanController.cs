@@ -79,6 +79,11 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
+                    var stk = _taiKhoanNhanThanhToanServices.GetByName(model.STKNhan);
+                    if (stk != null)
+                    {
+                        return BadRequest("Số tài khoản đã tồn tại");
+                    }
                     return Ok(_taiKhoanNhanThanhToanServices.Add(model));
                 }
                 catch
@@ -99,8 +104,13 @@ namespace QuanLyBanHangAPI.Controllers
                 var ncc = _taiKhoanNhanThanhToanServices.GetById(id);
                 if (ncc != null)
                 {
+                    var stk = _taiKhoanNhanThanhToanServices.GetByName(vm.STKNhan);
+                    if (stk != null)
+                    {
+                        return BadRequest("Số tài khoản đã tồn tại");
+                    }
                     _taiKhoanNhanThanhToanServices.Update(vm);
-                    return NoContent();
+                    return Ok("Cập nhật thành công");
                 }
                 return NotFound();
             }
@@ -119,7 +129,7 @@ namespace QuanLyBanHangAPI.Controllers
                     return NotFound();
                 }
                 _taiKhoanNhanThanhToanServices.Delete(id);
-                return Ok();
+                return Ok("Xóa thành công");
             }
             return BadRequest("Token đã hết hạn");
         }

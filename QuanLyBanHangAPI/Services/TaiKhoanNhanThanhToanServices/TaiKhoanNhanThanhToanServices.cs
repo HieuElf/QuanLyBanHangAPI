@@ -74,6 +74,23 @@ namespace QuanLyBanHangAPI.Services.TaiKhoanNhanThanhToanServices
             return null;
         }
 
+        public TaiKhoanNhanThanhToanVM GetByName(string name)
+        {
+            var tk = _db.TaiKhoanNhanThanhToans.SingleOrDefault(m => m.STKNhan == name);
+            if (tk != null)
+            {
+                return new TaiKhoanNhanThanhToanVM
+                {
+                    IdTK = tk.IdTK,
+                    TenTKNhan = tk.TenTKNhan,
+                    STKNhan = tk.STKNhan,
+                    NganHang = tk.NganHang,
+                    ChiNhanh = tk.ChiNhanh
+                };
+            }
+            return null;
+        }
+
         public void Update(TaiKhoanNhanThanhToanVM vm)
         {
             var tk = _db.TaiKhoanNhanThanhToans.SingleOrDefault(m => m.IdTK == vm.IdTK);

@@ -65,6 +65,21 @@ namespace QuanLyBanHangAPI.Services.NhaCungCapServices
             return null;
         }
 
+        public NhaCungCapVM GetByName(string name)
+        {
+            var ncc = _db.NhaCungCaps.SingleOrDefault(n => n.TenNhaCungCap == name);
+            if (ncc != null)
+            {
+                return new NhaCungCapVM
+                {
+                    MaNhaCungCap = ncc.MaNhaCungCap,
+                    TenNhaCungCap = ncc.TenNhaCungCap,
+                    TrangChu = ncc.TrangChu
+                };
+            }
+            return null;
+        }
+
         public void Update(NhaCungCapVM vm)
         {
             var ncc = _db.NhaCungCaps.SingleOrDefault(n => n.MaNhaCungCap == vm.MaNhaCungCap);

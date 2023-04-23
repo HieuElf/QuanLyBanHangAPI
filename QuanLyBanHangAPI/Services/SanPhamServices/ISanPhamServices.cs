@@ -7,6 +7,7 @@ namespace QuanLyBanHangAPI.Services.SanPhamServices
     {
         List<SanPhamVM> GetAll();
         SanPhamVM GetByID(int id);
+        SanPhamVM GetByName(string name);
         SanPhamVM Add(SanPhamModel model);
         void Delete(int id);
         void Update(SanPhamVM vm);

@@ -80,6 +80,15 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 try
                 {
+                    if (model.TenNhaCungCap == null)
+                    {
+                        return BadRequest("Chưa điền tên nhà cung cấp");
+                    }
+                    var tenncc = _nhaCungCapServices.GetByName(model.TenNhaCungCap);
+                    if (tenncc != null)
+                    {
+                        return BadRequest("Tên nhà cung cấp đã tồn tại");
+                    }
                     return Ok(_nhaCungCapServices.Add(model));
                 }
                 catch
@@ -100,8 +109,17 @@ namespace QuanLyBanHangAPI.Controllers
                 var ncc = _nhaCungCapServices.GetById(vm.MaNhaCungCap);
                 if (ncc != null)
                 {
+                    if (vm.TenNhaCungCap == null)
+                    {
+                        return BadRequest("Chưa điền tên nhà cung cấp");
+                    }
+                    var tenncc = _nhaCungCapServices.GetByName(vm.TenNhaCungCap);
+                    if (tenncc != null)
+                    {
+                        return BadRequest("Tên nhà cung cấp đã tồn tại");
+                    }
                     _nhaCungCapServices.Update(vm);
-                    return NoContent();
+                    return Ok("Cập nhật thành công");
                 }
                 return NotFound();
             }
@@ -121,7 +139,7 @@ namespace QuanLyBanHangAPI.Controllers
                     return NotFound();
                 }
                 _nhaCungCapServices.DeleteById(id);
-                return Ok();
+                return Ok("Xóa thành công");
             }
             return BadRequest("Token đã hết hạn");
         }

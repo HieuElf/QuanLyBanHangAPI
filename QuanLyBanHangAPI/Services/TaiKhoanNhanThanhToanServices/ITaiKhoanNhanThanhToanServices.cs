@@ -7,6 +7,7 @@ namespace QuanLyBanHangAPI.Services.TaiKhoanNhanThanhToanServices
     {
         List<TaiKhoanNhanThanhToanVM> GetAll();
         TaiKhoanNhanThanhToanVM GetById(int id);
+        TaiKhoanNhanThanhToanVM GetByName(string name);
         TaiKhoanNhanThanhToanVM Add(TaiKhoanNhanThanhToanModel model);
         void Update(TaiKhoanNhanThanhToanVM vm);
         void Delete(int id);

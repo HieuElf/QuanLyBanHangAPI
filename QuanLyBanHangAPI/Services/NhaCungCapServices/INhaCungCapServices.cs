@@ -7,6 +7,7 @@ namespace QuanLyBanHangAPI.Services.NhaCungCapServices
     {
         List<NhaCungCapVM> GetAll();
         NhaCungCapVM GetById(int id);
+        NhaCungCapVM GetByName(string name);
         NhaCungCapVM Add(NhaCungCapModel model);
         void Update(NhaCungCapVM vm);
         void DeleteById(int id);
