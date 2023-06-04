@@ -9,7 +9,7 @@ namespace QuanLyBanHangAPI.Services.GoiDIchVuServices
         List<GoiDichVuVM> GetAll();
         GoiDichVuVM GetById(int id);
         GoiDichVuVM GetByName(string name);
-        void Update(GoiDichVuVM vm);
+        string Update(GoiDichVuVM vm);
         void Delete(int id);
     }
 }

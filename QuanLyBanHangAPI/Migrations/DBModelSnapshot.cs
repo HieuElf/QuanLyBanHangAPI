@@ -221,31 +221,163 @@ namespace QuanLyBanHangAPI.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("QuanLyBanHangAPI.Data.CtyXuatHoaDon", b =>
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.Blog", b =>
                 {
-                    b.Property<int>("MaCty")
+                    b.Property<int>("maBaiViet")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("anhBaiViet")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("anhBia")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("luotXem")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("maChuyenMuc")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ngayBaiViet")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ngayChinhSuaCuoi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("noiDung")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("tenBaiViet")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("tomTat")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("trangThai")
+                        .HasColumnType("bit");
+
+                    b.HasKey("maBaiViet");
+
+                    b.HasIndex("maChuyenMuc");
+
+                    b.HasIndex("tenBaiViet")
+                        .IsUnique();
+
+                    b.ToTable("Blog");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.ChiTietDonHang", b =>
+                {
+                    b.Property<Guid>("MaChiTietDonHang")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DonGia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("MaDonHang")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MaSP")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SoLuong")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenSP")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("ThanhTien")
+                        .HasColumnType("float");
+
+                    b.HasKey("MaChiTietDonHang");
+
+                    b.HasIndex("MaDonHang");
+
+                    b.ToTable("ChiTietDonHang");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.ChuyenMucBlog", b =>
+                {
+                    b.Property<int>("maChuyenMuc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("moTa")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("tenChuyenMuc")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("maChuyenMuc");
+
+                    b.HasIndex("tenChuyenMuc")
+                        .IsUnique()
+                        .HasFilter("[tenChuyenMuc] IS NOT NULL");
+
+                    b.ToTable("ChuyenMucBlog");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.DonDatHang", b =>
+                {
+                    b.Property<Guid>("MaDonHang")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("DiaChi")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SDT")
+                    b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TenCty")
+                    b.Property<int>("MaDonViChuyenPhat")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MaGiaoDichVNPay")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MaKhachHang")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("MaCty");
+                    b.Property<DateTime>("NgayDatHang")
+                        .HasColumnType("datetime2");
 
-                    b.ToTable("CtyXuatHoaDon");
+                    b.Property<DateTime>("NgayGiao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhuongThucThanhToan")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SoDienThoai")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenKhachHang")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TinhTrangGiaoHang")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrangThaiDonHang")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("MaDonHang");
+
+                    b.HasIndex("MaDonViChuyenPhat");
+
+                    b.ToTable("DonDatHang");
                 });
 
             modelBuilder.Entity("QuanLyBanHangAPI.Data.DonViChuyenPhat", b =>
                 {
-                    b.Property<int>("MaDonVi")
+                    b.Property<int>("MaDonViChuyenPhat")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -262,7 +394,10 @@ namespace QuanLyBanHangAPI.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.HasKey("MaDonVi");
+                    b.HasKey("MaDonViChuyenPhat");
+
+                    b.HasIndex("TenDonVi")
+                        .IsUnique();
 
                     b.ToTable("DonViChuyenPhat");
                 });
@@ -274,9 +409,8 @@ namespace QuanLyBanHangAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("MaNhaCungCap")
-                        .IsRequired()
-                        .HasColumnType("int");
+                    b.Property<string>("MoTa")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenGoi")
                         .IsRequired()
@@ -285,49 +419,10 @@ namespace QuanLyBanHangAPI.Migrations
 
                     b.HasKey("MaGoi");
 
-                    b.HasIndex("MaNhaCungCap");
+                    b.HasIndex("TenGoi")
+                        .IsUnique();
 
                     b.ToTable("GoiDichVu");
-                });
-
-            modelBuilder.Entity("QuanLyBanHangAPI.Data.KhachHangOder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("MaGoi")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MaNhaCungCap")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MaSoThue")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("SoDienThoai")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
-
-                    b.Property<string>("TenCongTy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TenNguoiLienHe")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MaGoi");
-
-                    b.HasIndex("MaNhaCungCap");
-
-                    b.ToTable("KhachHangOder");
                 });
 
             modelBuilder.Entity("QuanLyBanHangAPI.Data.NhaCungCap", b =>
@@ -339,13 +434,15 @@ namespace QuanLyBanHangAPI.Migrations
 
                     b.Property<string>("TenNhaCungCap")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("TrangChu")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("MaNhaCungCap");
+
+                    b.HasIndex("TenNhaCungCap")
+                        .IsUnique();
 
                     b.ToTable("NhaCungCap");
                 });
@@ -357,18 +454,45 @@ namespace QuanLyBanHangAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("HinhAnh")
+                    b.Property<string>("AnhSP")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("DaBan")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Gia")
+                        .HasColumnType("float");
+
+                    b.Property<double>("GiamGia")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ListAnh")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LuotXem")
+                        .HasColumnType("int");
+
                     b.Property<int?>("MaGoi")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MaNhaCungCap")
                         .HasColumnType("int");
 
                     b.Property<string>("MoTa")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("NgayChinhSuaCuoi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NoiDung")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("TenSP")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("TomTat")
                         .HasColumnType("nvarchar(max)");
@@ -380,35 +504,12 @@ namespace QuanLyBanHangAPI.Migrations
 
                     b.HasIndex("MaGoi");
 
+                    b.HasIndex("MaNhaCungCap");
+
+                    b.HasIndex("TenSP")
+                        .IsUnique();
+
                     b.ToTable("SanPham");
-                });
-
-            modelBuilder.Entity("QuanLyBanHangAPI.Data.TaiKhoanNhanThanhToan", b =>
-                {
-                    b.Property<int>("IdTK")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ChiNhanh")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NganHang")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("STKNhan")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TenTKNhan")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("IdTK");
-
-                    b.ToTable("TaiKhoanNhanThanhToan");
                 });
 
             modelBuilder.Entity("QuanLyBanHangAPI.Data.Token", b =>
@@ -502,30 +603,37 @@ namespace QuanLyBanHangAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("QuanLyBanHangAPI.Data.GoiDichVu", b =>
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.Blog", b =>
                 {
-                    b.HasOne("QuanLyBanHangAPI.Data.NhaCungCap", "NhaCungCap")
-                        .WithMany("GoiDichVus")
-                        .HasForeignKey("MaNhaCungCap")
+                    b.HasOne("QuanLyBanHangAPI.Data.ChuyenMucBlog", "ChuyenMucBlog")
+                        .WithMany("Blogs")
+                        .HasForeignKey("maChuyenMuc")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("NhaCungCap");
+                    b.Navigation("ChuyenMucBlog");
                 });
 
-            modelBuilder.Entity("QuanLyBanHangAPI.Data.KhachHangOder", b =>
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.ChiTietDonHang", b =>
                 {
-                    b.HasOne("QuanLyBanHangAPI.Data.GoiDichVu", "GoiDichVu")
-                        .WithMany("KhachHangOders")
-                        .HasForeignKey("MaGoi");
+                    b.HasOne("QuanLyBanHangAPI.Data.DonDatHang", "DonDatHang")
+                        .WithMany("ChiTietDonHangs")
+                        .HasForeignKey("MaDonHang")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("QuanLyBanHangAPI.Data.NhaCungCap", "NhaCungCap")
-                        .WithMany("KhachHangOders")
-                        .HasForeignKey("MaNhaCungCap");
+                    b.Navigation("DonDatHang");
+                });
 
-                    b.Navigation("GoiDichVu");
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.DonDatHang", b =>
+                {
+                    b.HasOne("QuanLyBanHangAPI.Data.DonViChuyenPhat", "DonViChuyenPhat")
+                        .WithMany("DonDatHangs")
+                        .HasForeignKey("MaDonViChuyenPhat")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("NhaCungCap");
+                    b.Navigation("DonViChuyenPhat");
                 });
 
             modelBuilder.Entity("QuanLyBanHangAPI.Data.SanPham", b =>
@@ -534,21 +642,38 @@ namespace QuanLyBanHangAPI.Migrations
                         .WithMany("SanPhams")
                         .HasForeignKey("MaGoi");
 
+                    b.HasOne("QuanLyBanHangAPI.Data.NhaCungCap", "NhaCungCap")
+                        .WithMany("SanPhams")
+                        .HasForeignKey("MaNhaCungCap");
+
                     b.Navigation("GoiDichVu");
+
+                    b.Navigation("NhaCungCap");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.ChuyenMucBlog", b =>
+                {
+                    b.Navigation("Blogs");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.DonDatHang", b =>
+                {
+                    b.Navigation("ChiTietDonHangs");
+                });
+
+            modelBuilder.Entity("QuanLyBanHangAPI.Data.DonViChuyenPhat", b =>
+                {
+                    b.Navigation("DonDatHangs");
                 });
 
             modelBuilder.Entity("QuanLyBanHangAPI.Data.GoiDichVu", b =>
                 {
-                    b.Navigation("KhachHangOders");
-
                     b.Navigation("SanPhams");
                 });
 
             modelBuilder.Entity("QuanLyBanHangAPI.Data.NhaCungCap", b =>
                 {
-                    b.Navigation("GoiDichVus");
-
-                    b.Navigation("KhachHangOders");
+                    b.Navigation("SanPhams");
                 });
 #pragma warning restore 612, 618
         }

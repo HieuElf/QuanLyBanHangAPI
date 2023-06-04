@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuanLyBanHangAPI.Models.GoiDichVu;
-using QuanLyBanHangAPI.Models.NhaCungCap;
 using QuanLyBanHangAPI.Services.GoiDIchVuServices;
 using QuanLyBanHangAPI.Services.TokenServices;
 using System.Data;
@@ -35,42 +34,32 @@ namespace QuanLyBanHangAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            bool check = CheckIsTokenExpired();
-            if (check == false)
+            try
             {
-                try
-                {
-                    return Ok(_goiDichVuServices.GetAll());
-                }
-                catch
-                {
-                    StatusCode(StatusCodes.Status500InternalServerError);
-                }
+                return Ok(_goiDichVuServices.GetAll());
             }
-            return BadRequest("Token đã hết hạn");
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            bool check = CheckIsTokenExpired();
-            if (!check)
+            try
             {
-                try
+                var goi = _goiDichVuServices.GetById(id);
+                if (goi != null)
                 {
-                    var goi = _goiDichVuServices.GetById(id);
-                    if (goi != null)
-                    {
-                        return Ok(goi);
-                    }
-                    return NotFound();
+                    return Ok(goi);
                 }
-                catch
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError);
-                }
+                return NotFound();
             }
-            return BadRequest("Token đã hết hạn");
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
         [HttpPost]
         [Authorize(Roles = "Ad")]
@@ -107,22 +96,20 @@ namespace QuanLyBanHangAPI.Controllers
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var goi = _goiDichVuServices.GetById(vm.MaGoi);
-                if (goi != null)
+                if (vm.TenGoi == null)
                 {
-                    if (vm.TenGoi == null)
-                    {
-                        return BadRequest("Tên gói chưa điền");
-                    }
-                    var checktengoi = _goiDichVuServices.GetByName(vm.TenGoi);
-                    if (checktengoi != null)
-                    {
-                        return BadRequest("Tên gói đã tồn tại");
-                    }
-                    _goiDichVuServices.Update(vm);
-                    return Ok("Cập nhật thành công");
+                    return BadRequest("Tên gói chưa điền");
                 }
-                return NotFound();
+                string result = _goiDichVuServices.Update(vm);
+                switch (result)
+                {
+                    case "OK":
+                        return Ok("Cập nhật thành công");
+                    case "Đã tồn tại dữ liệu khác trùng tên":
+                        return BadRequest(result);
+                    case "Không tồn tại":
+                        return NotFound(result);
+                }
             }
             return BadRequest("Token đã hết hạn");
         }

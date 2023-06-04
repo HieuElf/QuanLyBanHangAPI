@@ -6,6 +6,6 @@ namespace QuanLyBanHangAPI.Models.GoiDichVu
     {
         public int MaGoi { get; set; }
         public string TenGoi { get; set; }
-        public int? MaCungCap { get; set; }
+        public string MoTa { get; set; }
     }
 }

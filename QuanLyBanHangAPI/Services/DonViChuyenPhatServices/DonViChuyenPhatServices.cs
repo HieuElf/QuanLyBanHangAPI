@@ -24,7 +24,7 @@ namespace QuanLyBanHangAPI.Services.DonViChuyenPhatServices
             _db.SaveChanges();
             return new DonViChuyenPhatVM
             {
-                MaDonVi = dv.MaDonVi,
+                MaDonViChuyenPhat = dv.MaDonViChuyenPhat,
                 TenDonVi = dv.TenDonVi,
                 SDT = dv.SDT,
                 GhiChu = dv.GhiChu
@@ -33,7 +33,7 @@ namespace QuanLyBanHangAPI.Services.DonViChuyenPhatServices
 
         public void Delete(int id)
         {
-            var data = _db.DonViChuyenPhats.SingleOrDefault(m => m.MaDonVi == id);
+            var data = _db.DonViChuyenPhats.SingleOrDefault(m => m.MaDonViChuyenPhat == id);
             if (data != null)
             {
                 _db.Remove(data);
@@ -45,7 +45,7 @@ namespace QuanLyBanHangAPI.Services.DonViChuyenPhatServices
         {
             var datas = _db.DonViChuyenPhats.Select(m => new DonViChuyenPhatVM
             {
-                MaDonVi = m.MaDonVi,
+                MaDonViChuyenPhat = m.MaDonViChuyenPhat,
                 TenDonVi = m.TenDonVi,
                 SDT = m.SDT,
                 GhiChu = m.GhiChu
@@ -55,12 +55,12 @@ namespace QuanLyBanHangAPI.Services.DonViChuyenPhatServices
 
         public DonViChuyenPhatVM GetByID(int id)
         {
-            var data = _db.DonViChuyenPhats.SingleOrDefault(m => m.MaDonVi == id);
+            var data = _db.DonViChuyenPhats.SingleOrDefault(m => m.MaDonViChuyenPhat == id);
             if (data != null)
             {
                 return new DonViChuyenPhatVM
                 {
-                    MaDonVi = data.MaDonVi,
+                    MaDonViChuyenPhat = data.MaDonViChuyenPhat,
                     TenDonVi = data.TenDonVi,
                     SDT = data.SDT,
                     GhiChu = data.GhiChu
@@ -76,7 +76,7 @@ namespace QuanLyBanHangAPI.Services.DonViChuyenPhatServices
             {
                 return new DonViChuyenPhatVM
                 {
-                    MaDonVi = data.MaDonVi,
+                    MaDonViChuyenPhat = data.MaDonViChuyenPhat,
                     TenDonVi = data.TenDonVi,
                     SDT = data.SDT,
                     GhiChu = data.GhiChu
@@ -85,16 +85,25 @@ namespace QuanLyBanHangAPI.Services.DonViChuyenPhatServices
             return null;
         }
 
-        public void Update(DonViChuyenPhatVM vm)
+        public string Update(DonViChuyenPhatVM vm)
         {
-            var data = _db.DonViChuyenPhats.SingleOrDefault(m => m.MaDonVi == vm.MaDonVi);
+            var data = _db.DonViChuyenPhats.SingleOrDefault(m => m.MaDonViChuyenPhat == vm.MaDonViChuyenPhat);
             if (data != null)
             {
+                var duplicate = _db.DonViChuyenPhats
+                    .Where(m => m.TenDonVi == vm.TenDonVi && m.MaDonViChuyenPhat != vm.MaDonViChuyenPhat)
+                    .ToList();
+                if (duplicate.Any())
+                {
+                    return "Đã tồn tại dữ liệu khác trùng tên";
+                }
                 data.TenDonVi = vm.TenDonVi;
                 data.SDT = vm.SDT;
                 data.GhiChu = vm.GhiChu;
                 _db.SaveChanges();
+                return "OK";
             }
+            return "Không tồn tại";
         }
     }
 }

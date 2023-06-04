@@ -73,6 +73,20 @@ namespace QuanLyBanHangAPI.Services.TokenServices
             return false;
         }
 
+        public bool SetTokenExprired(string token)
+        {
+            var tokenindb = _db.Tokens.SingleOrDefault(n => n.TokenKey == token);
+            if (tokenindb != null)
+            {
+                tokenindb.IsRevoked = true;
+                tokenindb.TokenIsReVoked = true;
+                _db.Update(tokenindb);
+                _db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
         public void Update(TokenVM vm)
         {
             var token = _db.Tokens.SingleOrDefault(n => n.TokenKey == vm.TokenKey);

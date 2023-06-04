@@ -9,7 +9,7 @@ namespace QuanLyBanHangAPI.Services.NhaCungCapServices
         NhaCungCapVM GetById(int id);
         NhaCungCapVM GetByName(string name);
         NhaCungCapVM Add(NhaCungCapModel model);
-        void Update(NhaCungCapVM vm);
+        string Update(NhaCungCapVM vm);
         void DeleteById(int id);
 
     }

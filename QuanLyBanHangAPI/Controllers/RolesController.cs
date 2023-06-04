@@ -63,6 +63,10 @@ namespace QuanLyBanHangAPI.Controllers
                 return NotFound();
             }
 
+            if (roleNameNew == null)
+            {
+                return BadRequest("Tên Role mới không hợp lệ");
+            }
             role.Name = roleNameNew;
 
             var result = await _roleManager.UpdateAsync(role);

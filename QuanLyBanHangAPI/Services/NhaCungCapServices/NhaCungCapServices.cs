@@ -80,15 +80,24 @@ namespace QuanLyBanHangAPI.Services.NhaCungCapServices
             return null;
         }
 
-        public void Update(NhaCungCapVM vm)
+        public string Update(NhaCungCapVM vm)
         {
             var ncc = _db.NhaCungCaps.SingleOrDefault(n => n.MaNhaCungCap == vm.MaNhaCungCap);
             if (ncc != null)
             {
+                var duplicate = _db.NhaCungCaps
+                    .Where(m => m.TenNhaCungCap == vm.TenNhaCungCap && m.MaNhaCungCap != vm.MaNhaCungCap)
+                    .ToList();
+                if (duplicate.Any())
+                {
+                    return "Đã tồn tại dữ liệu khác trùng tên";
+                }
                 ncc.TenNhaCungCap = vm.TenNhaCungCap;
                 ncc.TrangChu = vm.TrangChu;
                 _db.SaveChanges();
+                return "OK";
             }
+            return "Không tồn tại";
         }
     }
 }

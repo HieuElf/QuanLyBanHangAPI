@@ -7,6 +7,7 @@ using QuanLyBanHangAPI.Data;
 using QuanLyBanHangAPI.Data.DTO;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -17,12 +18,14 @@ namespace QuanLyBanHangAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IWebHostEnvironment _environment;
 
-        public UserController(UserManager<ApplicationUser> userManager,IWebHostEnvironment environment)
+        public UserController(UserManager<ApplicationUser> userManager,IWebHostEnvironment environment, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _environment = environment;
+            _roleManager = roleManager;
         }
         private bool IsValidEmail(string email)
         {
@@ -35,7 +38,12 @@ namespace QuanLyBanHangAPI.Controllers
             // Kiểm tra xem địa chỉ email có khớp với biểu thức chính quy hay không
             return regex.IsMatch(email);
         }
-
+        private static bool IsImage(string fileName)
+        {
+            string[] acceptedExtensions = { ".jpg", ".jpeg", ".png", ".gif"};
+            string extension = Path.GetExtension(fileName);
+            return acceptedExtensions.Contains(extension.ToLower());
+        }
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDto registerDto)
         {
@@ -60,21 +68,33 @@ namespace QuanLyBanHangAPI.Controllers
                 UserName = registerDto.UserName,
                 Email = registerDto.Email,
                 FullName = registerDto.UserName
-                
             };
 
+            var roleExists = await _roleManager.RoleExistsAsync("Member");
+
+            if (!roleExists)
+            {
+                var role = new IdentityRole("Member");
+                await _roleManager.CreateAsync(role);
+            }
+
             var result = await _userManager.CreateAsync(adduser, registerDto.Password);
+
 
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
             }
 
+            var newuser = await _userManager.FindByNameAsync(registerDto.UserName);
+
+            await _userManager.AddToRoleAsync(newuser, "Member");
+
             return Ok();
         }
         [HttpPost("updateprofile")]
         [Authorize]
-        public async Task<IActionResult> UpdateTTUser([FromForm] UpdateUserDto updateUserDto)
+        public async Task<IActionResult> UpdateTTUser([FromForm]UpdateUserDto updateUserDto)
         {
             if (updateUserDto.userName == null)
             {
@@ -87,40 +107,62 @@ namespace QuanLyBanHangAPI.Controllers
             }
             if (updateUserDto.email != null)
             {
-                user.Email = updateUserDto.email;
+                bool checkmail = IsValidEmail(updateUserDto.email);
+                if (checkmail)
+                {
+                    user.Email = updateUserDto.email;
+                }
+                else
+                {
+                    return BadRequest("Email sai định dạng");
+                }
             }
             if (updateUserDto.fullName != null)
             {
                 user.FullName = updateUserDto.fullName;
             }
-            if (updateUserDto.avatarUrl != null || updateUserDto.avatarUrl.Length != 0)
+            if (updateUserDto.avatarUrl != null && updateUserDto.avatarUrl.Length != 0)
             {
-                var uploadsFolderPath = Path.Combine(_environment.WebRootPath, "uploads", "avatar", user.UserName);
-                if (!Directory.Exists(uploadsFolderPath))
+                bool checkanh = IsImage(updateUserDto.avatarUrl.FileName);
+                if (checkanh)
                 {
-                    Directory.CreateDirectory(uploadsFolderPath);
-                }
-                // Xóa file avatar cũ
-                string fileOldPath = Path.Combine(_environment.WebRootPath, "uploads", "avatar", user.UserName,user.AvatarUrl);
-                if (fileOldPath != null)
-                {
-                    System.IO.File.Delete(fileOldPath);
-                }
+                    var uploadsFolderPath = Path.Combine(_environment.WebRootPath, "uploads", "avatar", user.UserName);
+                    if (!Directory.Exists(uploadsFolderPath))
+                    {
+                        Directory.CreateDirectory(uploadsFolderPath);
+                    }
+                    string fileOldPath = "";
+                    // Xóa file avatar cũ
+                    if (user.AvatarUrl != null)
+                    {
+                        fileOldPath = Path.Combine(_environment.WebRootPath, "uploads", "avatar", user.UserName, user.AvatarUrl);
+                    }
 
-                var filePath = Path.Combine(uploadsFolderPath, updateUserDto.avatarUrl.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await updateUserDto.avatarUrl.CopyToAsync(stream);
-                    stream.Flush();
-                    user.AvatarUrl = updateUserDto.avatarUrl.FileName;
+                    if (fileOldPath != "")
+                    {
+                        System.IO.File.Delete(fileOldPath);
+                    }
+
+                    var filePath = Path.Combine(uploadsFolderPath, updateUserDto.avatarUrl.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await updateUserDto.avatarUrl.CopyToAsync(stream);
+                        stream.Flush();
+                        user.AvatarUrl = updateUserDto.avatarUrl.FileName;
+                    }
                 }
-                var result = await _userManager.UpdateAsync(user);
-                if (!result.Succeeded)
+                else
                 {
-                    return BadRequest(result.Errors);
+                    return BadRequest("Chỉ chấp nhận file ảnh có định dạng (.jpg, .jpeg, .png, .gif)");
                 }
-            }          
-            return Ok();
+                
+            }
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+            return Ok("Cập nhật thành công");
         }
 
         [HttpPost("reset-password")]

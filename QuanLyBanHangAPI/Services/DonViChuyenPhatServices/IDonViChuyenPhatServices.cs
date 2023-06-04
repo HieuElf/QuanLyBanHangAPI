@@ -9,7 +9,7 @@ namespace QuanLyBanHangAPI.Services.DonViChuyenPhatServices
         DonViChuyenPhatVM GetByID(int id);
         DonViChuyenPhatVM GetByName(string name);
         DonViChuyenPhatVM Add(DonViChuyenPhatModel model);
-        void Update(DonViChuyenPhatVM vm);
+        string Update(DonViChuyenPhatVM vm);
         void Delete(int id);
     }
 }

@@ -34,19 +34,14 @@ namespace QuanLyBanHangAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            bool check = CheckIsTokenExpired();
-            if (check == false)
+            try
             {
-                try
-                {
-                    return Ok(_donViChuyenPhatServices.GetAll());
-                }
-                catch
-                {
-                    StatusCode(StatusCodes.Status500InternalServerError);
-                }
+                return Ok(_donViChuyenPhatServices.GetAll());
             }
-            return BadRequest("Token đã hết hạn");
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
@@ -105,22 +100,20 @@ namespace QuanLyBanHangAPI.Controllers
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _donViChuyenPhatServices.GetByID(id);
-                if (ncc != null)
+                if (vm.TenDonVi == null)
                 {
-                    if (vm.TenDonVi == null)
-                    {
-                        return BadRequest("Tên đơn vị không được để trống");
-                    }
-                    var checkdonvi = _donViChuyenPhatServices.GetByName(vm.TenDonVi);
-                    if (checkdonvi != null)
-                    {
-                        return BadRequest("Tên đơn vị đã tồn tại");
-                    }
-                    _donViChuyenPhatServices.Update(vm);
-                    return Ok("Cập nhật thành công");
+                    return BadRequest("Tên đơn vị không được để trống");
                 }
-                return NotFound();
+                string result = _donViChuyenPhatServices.Update(vm);
+                switch (result)
+                {
+                    case "OK":
+                        return Ok("Cập nhật thành công");
+                    case "Đã tồn tại dữ liệu khác trùng tên":
+                        return BadRequest(result);
+                    case "Không tồn tại":
+                        return NotFound(result);
+                }
             }
             return BadRequest("Token đã hết hạn");
         }

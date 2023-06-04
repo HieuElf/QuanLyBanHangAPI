@@ -46,11 +46,14 @@ namespace QuanLyBanHangAPI.Controllers
             {
                 return NotFound();
             }
+            // Xóa tất cả các vai trò hiện tại của người dùng
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
             var result = await _userManager.AddToRoleAsync(user, roleName);
             if (result.Succeeded)
             {
-                return NoContent();
+                return Ok();
             }
 
             return BadRequest(result.Errors);

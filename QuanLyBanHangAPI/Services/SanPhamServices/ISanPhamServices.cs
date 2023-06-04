@@ -9,7 +9,7 @@ namespace QuanLyBanHangAPI.Services.SanPhamServices
         SanPhamVM GetByID(int id);
         SanPhamVM GetByName(string name);
         SanPhamVM Add(SanPhamModel model);
-        void Delete(int id);
-        void Update(SanPhamVM vm);
+        bool Delete(int id);
+        string Update(SanPhamVM vm);
     }
 }

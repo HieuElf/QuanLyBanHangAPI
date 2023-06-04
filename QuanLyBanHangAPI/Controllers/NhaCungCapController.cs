@@ -9,7 +9,6 @@ namespace QuanLyBanHangAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class NhaCungCapController : ControllerBase
     {
         private readonly INhaCungCapServices _nhaCungCapServices;
@@ -34,19 +33,14 @@ namespace QuanLyBanHangAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            bool check = CheckIsTokenExpired();
-            if (check == false)
+            try
             {
-                try
-                {
-                    return Ok(_nhaCungCapServices.GetAll());
-                }
-                catch
-                {
-                    StatusCode(StatusCodes.Status500InternalServerError);
-                }
+                return Ok(_nhaCungCapServices.GetAll());
             }
-            return BadRequest("Token đã hết hạn");
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpGet("{id}")]
@@ -106,22 +100,20 @@ namespace QuanLyBanHangAPI.Controllers
             bool check = CheckIsTokenExpired();
             if (check == false)
             {
-                var ncc = _nhaCungCapServices.GetById(vm.MaNhaCungCap);
-                if (ncc != null)
+                if (vm.TenNhaCungCap == null)
                 {
-                    if (vm.TenNhaCungCap == null)
-                    {
-                        return BadRequest("Chưa điền tên nhà cung cấp");
-                    }
-                    var tenncc = _nhaCungCapServices.GetByName(vm.TenNhaCungCap);
-                    if (tenncc != null)
-                    {
-                        return BadRequest("Tên nhà cung cấp đã tồn tại");
-                    }
-                    _nhaCungCapServices.Update(vm);
-                    return Ok("Cập nhật thành công");
+                    return BadRequest("Chưa điền tên nhà cung cấp");
                 }
-                return NotFound();
+                string result = _nhaCungCapServices.Update(vm);
+                switch (result)
+                {
+                    case "OK":
+                        return Ok("Cập nhật thành công");
+                    case "Đã tồn tại dữ liệu khác trùng tên":
+                        return BadRequest(result);
+                    case "Không tồn tại":
+                        return NotFound(result);
+                }
             }
             return BadRequest("Token đã hết hạn");
         }

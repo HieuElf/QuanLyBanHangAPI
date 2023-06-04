@@ -18,7 +18,7 @@ namespace QuanLyBanHangAPI.Services.GoiDIchVuServices
             var goi = new GoiDichVu
             {
                 TenGoi = model.TenGoi,
-                MaNhaCungCap = model.MaNhaCungCap
+                MoTa = model.MoTa,
             };
             _db.Add(goi);
             _db.SaveChanges();
@@ -26,7 +26,7 @@ namespace QuanLyBanHangAPI.Services.GoiDIchVuServices
             {
                 MaGoi = goi.MaGoi,
                 TenGoi = goi.TenGoi,
-                MaCungCap = goi.MaNhaCungCap             
+                MoTa = goi.MoTa,
             };
         }
 
@@ -46,7 +46,7 @@ namespace QuanLyBanHangAPI.Services.GoiDIchVuServices
             {
                 MaGoi = n.MaGoi,
                 TenGoi = n.TenGoi,
-                MaCungCap = n.MaNhaCungCap
+                MoTa = n.MoTa
             });
             return gois.ToList();
         }
@@ -60,7 +60,7 @@ namespace QuanLyBanHangAPI.Services.GoiDIchVuServices
                 {
                     MaGoi = goi.MaGoi,
                     TenGoi = goi.TenGoi,
-                    MaCungCap = goi.MaNhaCungCap
+                    MoTa = goi.MoTa
                 };
             }
             return null;
@@ -75,21 +75,30 @@ namespace QuanLyBanHangAPI.Services.GoiDIchVuServices
                 {
                     MaGoi = goi.MaGoi,
                     TenGoi = goi.TenGoi,
-                    MaCungCap = goi.MaNhaCungCap
+                    MoTa = goi.MoTa
                 };
             }
             return null;
         }
 
-        public void Update(GoiDichVuVM vm)
+        public string Update(GoiDichVuVM vm)
         {
             var goi = _db.GoiDichVus.SingleOrDefault(n => n.MaGoi == vm.MaGoi);
             if (goi != null)
             {
+                var duplicate = _db.GoiDichVus
+                    .Where(m => m.TenGoi == vm.TenGoi && m.MaGoi != vm.MaGoi)
+                    .ToList();
+                if (duplicate.Any())
+                {
+                    return "Đã tồn tại dữ liệu khác trùng tên";
+                }
                 goi.TenGoi = vm.TenGoi;
-                goi.MaNhaCungCap = vm.MaCungCap;
+                goi.MoTa = vm.MoTa;
                 _db.SaveChanges();
+                return "OK";
             }
+            return "Không tồn tại";
         }
     }
 }

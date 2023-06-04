@@ -9,13 +9,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using QuanLyBanHangAPI.Data;
-using QuanLyBanHangAPI.Services.CtyXuatHoaDonServices;
+using QuanLyBanHangAPI.Services.BlogServices;
+using QuanLyBanHangAPI.Services.ChiTietDonHangServices;
+using QuanLyBanHangAPI.Services.ChuyenMucBlogServices;
+using QuanLyBanHangAPI.Services.DonDatHangServices;
 using QuanLyBanHangAPI.Services.DonViChuyenPhatServices;
 using QuanLyBanHangAPI.Services.GoiDIchVuServices;
-using QuanLyBanHangAPI.Services.KhachHangOderServices;
 using QuanLyBanHangAPI.Services.NhaCungCapServices;
-using QuanLyBanHangAPI.Services.TaiKhoanNhanThanhToanServices;
+using QuanLyBanHangAPI.Services.SanPhamServices;
 using QuanLyBanHangAPI.Services.TokenServices;
+using QuanLyBanHangAPI.Services.VNPayServices;
 using System;
 using System.Text;
 
@@ -92,13 +95,16 @@ namespace QuanLyBanHangAPI
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = false;
             });
+            services.AddScoped<IVNPayServices, VNPayServices>();
             services.AddScoped<INhaCungCapServices, NhaCungCapServices>();
             services.AddScoped<ITokenServices, TokenServices>();
-            services.AddScoped<ICtyXuatHoaDonServices, CtyXuatHoaDonServices>();
             services.AddScoped<IDonViChuyenPhatServices, DonViChuyenPhatServices>();
-            services.AddScoped<ITaiKhoanNhanThanhToanServices, TaiKhoanNhanThanhToanServices>();
             services.AddScoped<IGoiDichVuServices, GoiDichVuServices>();
-            services.AddScoped<IKhachHangOderServices, KhachHangOderServices>();
+            services.AddScoped<ISanPhamServices, SanPhamServices>();
+            services.AddScoped<IChuyenMucBlogServices,ChuyenMucBlogServices>();
+            services.AddScoped<IBlogServices, BlogServices>();
+            services.AddScoped<IDonDatHangServices,DonDatHangServices>();
+            services.AddScoped<IChiTietDonHangServices, ChiTietDonHangServices>();
             services.AddSwaggerGen(c =>
             {
                 // Include 'SecurityScheme' to use JWT Authentication

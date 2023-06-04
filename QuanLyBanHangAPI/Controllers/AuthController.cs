@@ -33,74 +33,94 @@ namespace QuanLyBanHangAPI.Controllers
             _dB = dB;
             _tokenServices = tokenServices;
         }
+        private string GetJwtToken()
+        {
+            // Lấy JWT bearer token từ header của HttpRequest
+            string jwtBearerToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            return jwtBearerToken;
+        }
 
         [HttpPost("login")]
         public async Task<ActionResult> Login(LoginDto loginDto)
         {
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
-            if (user != null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
+            if (user == null)
             {
-                var authClaims = new List<Claim>
-                {
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim("UserName",user.UserName),
-                    new Claim(JwtRegisteredClaimNames.UniqueName,user.FullName),
-                    //new Claim("Avatar",user.AvatarUrl)
-                };
-                if (user.AvatarUrl != null || user.AvatarUrl == "")
-                {
-                    authClaims.Add(new Claim("Avatar", user.AvatarUrl));
-                }
-                var roles = await _userManager.GetRolesAsync(user);
-                foreach (var role in roles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, role));
-                }
-
-                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-                var token = new JwtSecurityToken(
-                    issuer: _configuration["JWT:ValidIssuer"],
-                    audience: _configuration["JWT:ValidAudience"],
-                    expires: DateTime.UtcNow.AddDays(1),
-                    claims: authClaims,
-                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                );
-
-                // Lưu token vào db
-
-                var tokendb = new Token
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = user.Id,
-                    TokenKey = new JwtSecurityTokenHandler().WriteToken(token),
-                    CreateAt = DateTime.UtcNow,
-                    VaiLidTo = token.ValidTo,
-                    TokenIsUsed = true,
-                    TokenIsReVoked = false,
-                    ReFreshToken = _tokenServices.GenerateRefreshToken(),
-                    IsUsed = false,
-                    IsRevoked = false
-                };
-
-                await _dB.AddAsync(tokendb);
-                await _dB.SaveChangesAsync();
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo,
-                    reFreshToken = tokendb.ReFreshToken
-                });
+                user = await _userManager.FindByEmailAsync(loginDto.UserName);
             }
-            return Unauthorized();
+            if (user != null)
+            {
+                bool checkPassword = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+                if (checkPassword)
+                {
+                    var authClaims = new List<Claim>
+                    {
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim("UserName",user.UserName),
+                        new Claim(JwtRegisteredClaimNames.UniqueName,user.FullName),
+                        new Claim(JwtRegisteredClaimNames.Email,user.Email)
+                    };
+                    if (user.AvatarUrl != null || user.AvatarUrl == "")
+                    {
+                        authClaims.Add(new Claim("Avatar", user.AvatarUrl));
+                    }
+                    var roles = await _userManager.GetRolesAsync(user);
+                    foreach (var role in roles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, role));
+                    }
+
+                    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+                    var token = new JwtSecurityToken(
+                        issuer: _configuration["JWT:ValidIssuer"],
+                        audience: _configuration["JWT:ValidAudience"],
+                        expires: DateTime.UtcNow.AddDays(1),
+                        claims: authClaims,
+                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                    );
+
+                    // Lưu token vào db
+
+                    var tokendb = new Token
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = user.Id,
+                        TokenKey = new JwtSecurityTokenHandler().WriteToken(token),
+                        CreateAt = DateTime.UtcNow,
+                        VaiLidTo = token.ValidTo,
+                        TokenIsUsed = true,
+                        TokenIsReVoked = false,
+                        ReFreshToken = _tokenServices.GenerateRefreshToken(),
+                        IsUsed = false,
+                        IsRevoked = false
+                    };
+
+                    await _dB.AddAsync(tokendb);
+                    await _dB.SaveChangesAsync();
+                    return Ok(new
+                    {
+                        token = new JwtSecurityTokenHandler().WriteToken(token),
+                        expiration = token.ValidTo,
+                        reFreshToken = tokendb.ReFreshToken
+                    });
+                }
+                return BadRequest("Mật khẩu không chính xác");
+            }
+            return NotFound("Tài khoản không tồn tại");
         }
 
         [HttpPost("logout")]
         public async Task<ActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-
-            return Ok();
+            string token = GetJwtToken();
+            bool setToken = _tokenServices.SetTokenExprired(token);
+            if (setToken)
+            {
+                return Ok();
+            }
+            return BadRequest("có lỗi trong quá trình đăng xuất");
         }
 
         [HttpGet("user")]

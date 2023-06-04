@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuanLyBanHangAPI.Data
 {
     [Table("GoiDichVu")]
+    [Index(nameof(GoiDichVu.TenGoi), IsUnique = true)]
+
     public class GoiDichVu
     {
         [Key]
@@ -12,11 +15,7 @@ namespace QuanLyBanHangAPI.Data
         [Required]
         [MaxLength(100)]
         public string TenGoi { get; set; }
-        [Required]
-        public int? MaNhaCungCap { get; set; }
-        [ForeignKey("MaNhaCungCap")]
-        public NhaCungCap NhaCungCap { get; set; }
-        public virtual ICollection<KhachHangOder> KhachHangOders { get; set; }
+        public string MoTa { get; set; }
         public virtual ICollection<SanPham> SanPhams { get; set; }
     }
 }

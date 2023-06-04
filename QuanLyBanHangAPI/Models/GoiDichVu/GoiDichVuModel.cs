@@ -3,6 +3,6 @@
     public class GoiDichVuModel
     {
         public string TenGoi { get; set; }
-        public int? MaNhaCungCap { get; set; }
+        public string MoTa { get; set; }
     }
 }
